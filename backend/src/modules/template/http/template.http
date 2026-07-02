@@ -1,0 +1,77 @@
+@baseUrl = http://localhost:4000
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYzg0NzNlZC02OTQyLTQ2YWQtOGI1Ni0xZDg3YjcyMWY5NmYiLCJ0ZW5hbnRJZCI6IjU5MWE2MmIxLTBhNGItNGExNC05MDkxLWZlZmExNWI0ZTMyYSIsInJvbGUiOiJBRE1JTiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc4MzAxOTA1OSwiZXhwIjoxNzgzMDE5OTU5fQ.h1FUdGXKM-tof110gmCztqlDLB9DOtxb_PVRMxPVeao
+@templateId = 84dfc284-ec51-4c21-8e97-317e12070115
+### =========================================
+### 1. AUTH (Pegar o Token primeiro)
+### =========================================
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+
+
+### =========================================
+### 2. TEMPLATES
+### =========================================
+
+### Criar novo Template (Exige Token de Admin)
+POST {{baseUrl}}/template
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Contrato de Prestação de Serviços (Padrão)",
+  "fields": [
+    {
+      "label": "Nome da Empresa Contratante",
+      "type": "text",
+      "required": true
+    },
+    {
+      "label": "Valor Mensal (R$)",
+      "type": "number",
+      "required": true
+    },
+    {
+      "label": "Data de Vencimento Fatura",
+      "type": "date",
+      "required": false
+    },
+    {
+      "label": "Inclui Suporte 24h?",
+      "type": "boolean",
+      "required": true
+    }
+  ]
+}
+
+### Listar todos os Templates do Tenant
+GET {{baseUrl}}/template
+Authorization: Bearer {{authToken}}
+
+### Buscar Template específico pelo ID
+GET {{baseUrl}}/template/{{templateId}}
+Authorization: Bearer {{authToken}}
+
+### Editar Template (Adicionar/Remover campos)
+PATCH {{baseUrl}}/template/{{templateId}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Contrato de Serviços (Atualizado)",
+  "fields": [
+    {
+      "label": "Nome da Empresa Contratante",
+      "type": "text",
+      "required": true
+    }
+  ]
+}
+
+### Ativar Template (Desativa todos os outros do Tenant)
+PATCH {{baseUrl}}/template/{{templateId}}/activate
+Authorization: Bearer {{authToken}}

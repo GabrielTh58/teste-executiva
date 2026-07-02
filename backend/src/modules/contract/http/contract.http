@@ -1,0 +1,77 @@
+@baseUrl = http://localhost:4000
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYzg0NzNlZC02OTQyLTQ2YWQtOGI1Ni0xZDg3YjcyMWY5NmYiLCJ0ZW5hbnRJZCI6IjU5MWE2MmIxLTBhNGItNGExNC05MDkxLWZlZmExNWI0ZTMyYSIsInJvbGUiOiJBRE1JTiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc4MzAxOTA1OSwiZXhwIjoxNzgzMDE5OTU5fQ.h1FUdGXKM-tof110gmCztqlDLB9DOtxb_PVRMxPVeao
+@templateId = 3f2badaf-dac0-4b59-9445-29b74fdf0db
+@contractId = aad2d7bc-3095-4164-88d7-a01959146ff8
+### =========================================
+### 1. AUTH & TEMPLATE (Setup)
+### =========================================
+
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+
+###  Listar templates para pegar o ID do ativo
+GET {{baseUrl}}/template
+Authorization: Bearer {{authToken}}
+
+
+### =========================================
+### 2. CONTRACTS (Contratos)
+### =========================================
+
+### Criar novo Contrato (Requer um template ativo no banco)
+// NOTA: Substitua as chaves "uuid-..." pelos IDs reais dos campos do template ativo
+POST {{baseUrl}}/contract
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Contrato #1",
+  "answers": {
+    "409be8d2-d9a0-4a46-8c1f-b66560f9ad34": "Empresa Cliente Fictícia LTDA",
+    "a798fd19-96ae-4679-8263-fcb450beba05": 20,
+    "dd48923e-1b91-4d79-b974-ea6b0f7ea358": "2024-07-15",
+    "7603314b-5f44-405a-a822-fd705af6c9e8": true
+  }
+}
+
+### Listar Contratos (Com filtros e paginação opcionais)
+GET {{baseUrl}}/contract?take=5&skip=0&status=ACTIVE
+Authorization: Bearer {{authToken}}
+
+### Buscar Contrato Específico pelo ID
+GET {{baseUrl}}/contract/{{contractId}}
+Authorization: Bearer {{authToken}}
+
+### =========================================
+### 3. MUTAÇÕES & HISTÓRICO
+### =========================================
+
+### Editar Respostas do Contrato (UPDATE_FIELD no History)
+PATCH {{baseUrl}}/contract/{{contractId}}/fields
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "answers": {
+    "810cee19-31e0-44d5-ab17-9ba4a8e8a455": 30
+  }
+}
+
+### Mudar Status do Contrato (STATUS_CHANGE no History)
+PATCH {{baseUrl}}/contract/{{contractId}}/status
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "status": "ACTIVE" 
+}
+// Status válidos: DRAFT, ACTIVE, CLOSED
+
+### Listar Histórico (Auditoria) do Contrato
+GET {{baseUrl}}/contract/{{contractId}}/history?take=10&skip=0
+Authorization: Bearer {{authToken}}

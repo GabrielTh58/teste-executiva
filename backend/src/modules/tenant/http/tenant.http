@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:4000
+
+POST {{baseUrl}}/tenant/onboarding
+Content-Type: application/json
+
+{
+    "tenantName": "Teste",
+    "adminEmail": "admin@gmail.com",
+    "password": "123456"
+}
+
+###
+
+GET {{baseUrl}}/ping
+
+### 
+
+POST {{baseUrl}}/tenant/onboarding
+Content-Type: application/json
+
+{
+    "tenantName": "Teste2",
+    "adminEmail": "admin2@gmail.com",
+    "password": "password123"
+}

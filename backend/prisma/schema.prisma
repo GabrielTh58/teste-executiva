@@ -1,11 +1,7 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  moduleFormat    = "cjs"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
@@ -32,85 +28,77 @@ enum HistoryAction {
 model Tenant {
   id        String     @id @default(uuid())
   name      String
-
-  users     User[]
+  createdAt DateTime   @default(now())
   templates Template[]
   contracts Contract[]
-
-  createdAt DateTime   @default(now())
+  users     User[]
 
   @@map("tenants")
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String    @id @default(uuid())
+  email     String    @unique
   password  String
-  role      Role     @default(VIEWER)
-  
+  role      Role      @default(VIEWER)
   tenantId  String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  
-  histories History[] 
+  createdAt DateTime  @default(now())
+  histories History[]
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
 
-  createdAt DateTime @default(now())
-
+  @@index([email], map: "idx_user_email")
+  @@index([tenantId], map: "idx_user_tenantId")
   @@map("users")
-  @@index([email], name: "idx_user_email")
-  @@index([tenantId], name: "idx_user_tenantId")
 }
 
 model Template {
-  id               String     @id @default(uuid())
-  name             String
-  fieldsConfig     Json      
-  
-  tenantId         String
-  tenant           Tenant     @relation(fields: [tenantId], references: [id])
-  contracts        Contract[]
+  id           String     @id @default(uuid())
+  name         String
+  fieldsConfig Json
+  tenantId     String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  isActive     Boolean    @default(false)
+  tenant       Tenant     @relation(fields: [tenantId], references: [id])
+  contracts    Contract[]
 
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-
+  @@index([tenantId], map: "idx_template_tenantId")
   @@map("contract_templates")
-  @@index([tenantId], name: "idx_template_tenantId")
 }
 
 model Contract {
-  id               String         @id @default(uuid())
-  status           ContractStatus @default(DRAFT)  
-  content          Json           
-  
-  tenantId         String
-  tenant           Tenant         @relation(fields: [tenantId], references: [id])
-  templateId       String
-  template         Template       @relation(fields: [templateId], references: [id])
-  histories        History[]
+  id         String         @id @default(uuid())
+  name       String
+  status     ContractStatus @default(DRAFT)
+  content    Json
+  tenantId   String
+  templateId String
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  template   Template       @relation(fields: [templateId], references: [id])
+  tenant     Tenant         @relation(fields: [tenantId], references: [id])
+  histories  History[]
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-
+  @@index([tenantId], map: "idx_contract_tenantId")
+  @@index([templateId], map: "idx_contract_templateId")
   @@map("contracts")
-  @@index([tenantId], name: "idx_contract_tenantId")
-  @@index([templateId], name: "idx_contract_templateId")
 }
 
 model History {
-  id           String   @id @default(uuid())
+  id           String        @id @default(uuid())
   action       HistoryAction
   changedField String?
-  oldValue    String?
-  newValue    String?
-  
+  oldValue     String?
+  newValue     String?
   contractId   String
-  contract     Contract @relation(fields: [contractId], references: [id])
-  
-  changedById       String
-  changedBy         User     @relation(fields: [changedById], references: [id])
+  changedById  String
+  createdAt    DateTime      @default(now())
+  changedBy    User          @relation(fields: [changedById], references: [id])
+  contract     Contract      @relation(fields: [contractId], references: [id])
 
-  createdAt    DateTime @default(now())
-
+  @@index([contractId], map: "idx_history_contractId")
+  @@index([changedById], map: "idx_history_changedById")
   @@map("history")
-  @@index([contractId], name: "idx_history_contractId")
-  @@index([changedById], name: "idx_history_changedById")
 }
+
+

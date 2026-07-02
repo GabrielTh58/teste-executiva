@@ -1,0 +1,40 @@
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYzg0NzNlZC02OTQyLTQ2YWQtOGI1Ni0xZDg3YjcyMWY5NmYiLCJ0ZW5hbnRJZCI6IjU5MWE2MmIxLTBhNGItNGExNC05MDkxLWZlZmExNWI0ZTMyYSIsInJvbGUiOiJBRE1JTiIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidHlwZSI6ImFjY2VzcyIsImlhdCI6MTc4MzAxODExNCwiZXhwIjoxNzgzMDE5MDE0fQ.oXTZZo4OhyaPKp3LL6sKxgGkCeLvgrB_PsE9Co0jAfQ
+@baseUrl = http://localhost:4000
+
+
+POST  {{baseUrl}}/auth/register
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+    "email": "user1@example.com",
+    "password": "password123",
+    "name": "John Doe",
+    "role": "VIEWER"
+}
+
+###
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+
+### 
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "user2@gmail.com",
+    "password": "senha123"
+}
+
+###
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNmVjMGU2NC03MTU1LTQ2YmEtYmY2OS1kOTVmMTg3NmRjM2YiLCJ0eXBlIjoicmVmcmVzaCIsImlhdCI6MTc4MzAxNzI3MCwiZXhwIjoxNzgzNjIyMDcwfQ.R2XNh3LtkcrlFzOG11S6pKamQ4VYsp18uIc3aNS5n8A"
+}
