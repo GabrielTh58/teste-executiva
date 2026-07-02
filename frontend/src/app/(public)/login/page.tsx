@@ -8,6 +8,7 @@ import { Input } from '@/shared/components/ui/Input';
 import { Label } from '@/shared/components/ui/Label';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import Link from 'next/link';
+import { useState } from 'react';
 
 const schema = z.object({
   email: z.email('Informe um e-mail válido'),
@@ -18,6 +19,7 @@ type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
   const { loading, submitLogin } = useAuth();
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const {
     register,
@@ -56,6 +58,8 @@ export default function LoginPage() {
               type="password"
               placeholder="Sua senha"
               {...register('password')}
+              isPasswordVisible={passwordVisible}
+              onToggleVisibility={() => setPasswordVisible(!passwordVisible)}
             />
             {errors.password && (
               <p className="text-sm text-destructive">{errors.password.message}</p>

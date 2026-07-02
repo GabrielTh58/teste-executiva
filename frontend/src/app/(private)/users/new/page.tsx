@@ -9,6 +9,7 @@ import { Label } from '@/shared/components/ui/Label';
 import { useSession } from '@/shared/context/SessionContext';
 import { useAuth } from '@/modules/auth/hooks/useAuth';
 import { Role } from '@/shared/enums/Role';
+import { useState } from 'react';
 
 
 const schema = z.object({
@@ -21,8 +22,9 @@ type FormData = z.infer<typeof schema>;
 
 export default function NewUserPage() {
   const { user } = useSession();
-  const { loading, submitRegister } = useAuth();  
-
+  const { loading, submitRegister } = useAuth();
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  
   const {
     register,
     handleSubmit,
@@ -38,7 +40,7 @@ export default function NewUserPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6 p-8"> 
+    <div className="mx-auto max-w-2xl space-y-6 p-8">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Nova Conta de Equipe</h1>
         <p className="text-muted-foreground">
@@ -59,6 +61,7 @@ export default function NewUserPage() {
                 type="email"
                 placeholder="usuario@empresa.com"
                 {...register('email')}
+                isPasswordVisible={false}
               />
               {errors.email && (
                 <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -70,8 +73,10 @@ export default function NewUserPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Sua senha"
                 {...register('password')}
+                isPasswordVisible={passwordVisible}
+                onToggleVisibility={() => setPasswordVisible(!passwordVisible)}
               />
               {errors.password && (
                 <p className="text-sm text-destructive">{errors.password.message}</p>

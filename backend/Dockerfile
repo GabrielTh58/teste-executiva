@@ -1,5 +1,4 @@
-# Stage 1 — Build
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -8,21 +7,13 @@ RUN npm ci
 
 COPY . .
 
-RUN npx prisma generate
+# URL fake só para o prisma generate não barrar o build
+RUN DATABASE_URL="postgresql://fake:fake@localhost:5432/fake" npx prisma generate
+
 RUN npm run build
 
-# Stage 2 — Runtime
-FROM node:20-alpine AS runner
-
-WORKDIR /app
-
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-
-COPY --from=builder /app/generated ./generated
+RUN ls -la dist/
 
 EXPOSE 4000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main.js"]
